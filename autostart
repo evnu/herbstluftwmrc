@@ -25,10 +25,6 @@ hc keybind $Mod-d spawn dmenu_run
 
 # basic movement in tiling and floating mode
 # focusing clients
-hc keybind $Mod-Left focus left
-hc keybind $Mod-Down focus down
-hc keybind $Mod-Up focus up
-hc keybind $Mod-Right focus right
 hc keybind $Mod-h focus left
 hc keybind $Mod-j focus down
 hc keybind $Mod-k focus up
@@ -77,14 +73,15 @@ for i in "${!tag_names[@]}"; do
 done
 
 # cycle through tags
-hc keybind $Mod-period use_index +1 --skip-visible
-hc keybind $Mod-comma use_index -1 --skip-visible
+hc keybind $Mod-Left use_index -1 --skip-visible
+hc keybind $Mod-Right use_index +1 --skip-visible
+hc keybind $Mod-f use_previous
 
 # layouting
 hc keybind $Mod-r remove
 hc keybind $Mod-s floating toggle
-hc keybind $Mod-f fullscreen toggle
-hc keybind $Mod-Shift-f set_attr clients.focus.floating toggle
+hc keybind $Mod-Control-f fullscreen toggle
+# hc keybind $Mod-Shift-f set_attr clients.focus.floating toggle
 hc keybind $Mod-p pseudotile toggle
 # The following cycles through the available layouts within a frame, but skips
 # layouts, if the layout change wouldn't affect the actual window positions.
