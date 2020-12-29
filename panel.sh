@@ -1,13 +1,24 @@
 #!/bin/bash
 
-FG='white'
-BG='black'
-DEFAULT_FONT="-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*"
-FONT=$(grep dzen2.font ~/.Xresources | cut -f2- -d ' ' || echo "$DEFAULT_FONT")
+# This should be somewhat similar to the font configured for dzen2 in Xresources
+FONT="-*-terminus-*-*-*-*-14-*-*-*-*-*-*-*"
 
 pkill dzen2
+pkill conky
 
-herbstclient --idle | {
+function uniq_linebuffered()
+{
+    awk '$0 != l { print ; l=$0 ; fflush(); }' "$@"
+}
+
+{
+    conky | while read -r; do
+        echo -e "conky $REPLY"
+    done > >(uniq_linebuffered) &
+    childpid=$!
+    herbstclient --idle
+    kill $childpid
+} | {
     TAGS=($(herbstclient tag_status $monitor))
     separator="^fg(#1793D0)^ro(1x16)^fg()"
     while true; do
@@ -29,12 +40,19 @@ herbstclient --idle | {
         echo -n " $separator "
         echo -n " $(herbstclient attr clients.focus.title) "
         echo -n " $separator "
+        conky_text_only=$(echo -n "$conky" | sed 's.\^[^(]*([^)]*)..g')
+        width=$(textwidth "$FONT" "$conky_text_only  ")
+        echo textwidth "'$FONT'" "'$conky_text_only  '" >>/tmp/tt
+        echo -n "^p(_RIGHT)^p(-$width)$conky"
         echo
         read line || break
         cmd=($line)
         case "$cmd[0]" in
             tag*)
                 TAGS=($(herbstclient tag_status $monitor))
+                ;;
+            conky*)
+                conky="${cmd[@]:1}"
                 ;;
         esac
     done
