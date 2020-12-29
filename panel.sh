@@ -59,4 +59,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -ta l -y 0 -x 0 -h 16 -w 1286 &
+} 2>/dev/null | dzen2 &
