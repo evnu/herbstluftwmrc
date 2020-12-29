@@ -26,7 +26,9 @@ herbstclient --idle | {
             esac
             echo -n "^ca()"
         done
-        echo -n " $separator"
+        echo -n " $separator "
+        echo -n " $(herbstclient attr clients.focus.title) "
+        echo -n " $separator "
         echo
         read line || break
         cmd=($line)
