@@ -38,8 +38,11 @@ function uniq_linebuffered()
             echo -n "^ca()"
         done
         echo -n " $separator "
-        echo -n " $(herbstclient attr clients.focus.title) "
-        echo -n " $separator "
+        title=$(herbstclient attr clients.focus.title)
+        if [ ! -z "$title" ]; then
+            echo -n " $(herbstclient attr clients.focus.title) "
+            echo -n " $separator "
+        fi
         conky_text_only=$(echo -n "$conky" | sed 's.\^[^(]*([^)]*)..g')
         width=$(textwidth "$FONT" "$conky_text_only  ")
         echo textwidth "'$FONT'" "'$conky_text_only  '" >>/tmp/tt
