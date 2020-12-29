@@ -5,6 +5,8 @@ BG='black'
 DEFAULT_FONT="-*-fixed-medium-*-*-*-12-*-*-*-*-*-*-*"
 FONT=$(grep dzen2.font ~/.Xresources | cut -f2- -d ' ' || echo "$DEFAULT_FONT")
 
+pkill dzen2
+
 herbstclient --idle | {
     TAGS=($(herbstclient tag_status $monitor))
     separator="^fg(#1793D0)^ro(1x16)^fg()"
@@ -34,4 +36,4 @@ herbstclient --idle | {
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -ta l -y 0 -x 0 -h 16 -w 1286 -fg $FG -bg $BG -fn $FONT &
+} 2>/dev/null | dzen2 -ta l -y 0 -x 0 -h 16 -w 1286 &
