@@ -167,7 +167,8 @@ hc detect_monitors
 # find the panel
 panel=~/.config/herbstluftwm/panel.sh
 [ -x "$panel" ] || panel=/etc/xdg/herbstluftwm/panel.sh
-for monitor in $(hc list_monitors | cut -d: -f1); do
+
+herbstclient list_monitors | sed 's/[:+]/ /g' | tr 'x' ' ' | while read -r monitor width height rest; do
     # start it on each monitor
-    "$panel" "$monitor" &
+    "$panel" "$monitor" "$width" "$height" &
 done

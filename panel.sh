@@ -3,6 +3,10 @@
 # This should be somewhat similar to the font configured for dzen2 in Xresources
 FONT="-*-terminus-*-*-*-*-14-*-*-*-*-*-*-*"
 
+monitor=$1
+width=$2
+height=$3
+
 pkill dzen2
 pkill conky
 
@@ -51,4 +55,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 &
+} 2>/dev/null | dzen2 -w $((width / 2)) -x $((width / 4)) &
