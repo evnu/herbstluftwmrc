@@ -45,7 +45,6 @@ function uniq_linebuffered()
         fi
         conky_text_only=$(echo -n "$conky" | sed 's.\^[^(]*([^)]*)..g')
         width=$(textwidth "$FONT" "$conky_text_only  ")
-        echo textwidth "'$FONT'" "'$conky_text_only  '" >>/tmp/tt
         echo -n "^p(_RIGHT)^p(-$width)$conky"
         echo
         read line || break
