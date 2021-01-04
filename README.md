@@ -10,6 +10,7 @@ Configuration for [herbstluftwm](https://herbstluftwm.org).
 * dmenu: used in some example scripts
 * conky
     * Configuration with ~/.conkyrc
+* slock
 
 ## Installation
 
