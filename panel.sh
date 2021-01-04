@@ -55,4 +55,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -w $((width / 2)) -x $((width / 4)) &
+} 2>/dev/null | dzen2 -dock -w $((width / 2)) -x $((width / 4)) &
