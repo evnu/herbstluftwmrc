@@ -81,8 +81,8 @@ function uniq_linebuffered()
             battery*)
                 battery="${cmd[@]:1}"
                 ;;
-            reload)
-                exit
+            reload*)
+                break
                 ;;
         esac
     done
