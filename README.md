@@ -8,8 +8,6 @@ Configuration for [herbstluftwm](https://herbstluftwm.org).
 * dzen2
     * Configuration of colors and font via Xresources
 * dmenu: used in some example scripts
-* conky
-    * Configuration with ~/.conkyrc
 * slock
 
 ## Installation

@@ -4,15 +4,12 @@
 FONT="-*-terminus-*-*-*-*-14-*-*-*-*-*-*-*"
 
 monitor=${1:-0}
-geometry=( $(herbstclient monitor_rect "$monitor") )
-if [ -z "$geometry" ] ;then
+geometry=($(herbstclient monitor_rect "$monitor"))
+if [ -z "$geometry" ]; then
     echo "Invalid monitor $monitor"
     exit 1
 fi
 panel_width=${geometry[2]}
-
-pkill dzen2
-pkill conky
 
 function uniq_linebuffered()
 {
@@ -20,13 +17,37 @@ function uniq_linebuffered()
 }
 
 {
-    conky | while read -r; do
-        echo -e "conky $REPLY"
+    while true; do
+        # "date" output is checked once a second, but an event is only
+        # generated if the output changed compared to the previous run.
+        date +$'date\t^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d'
+        sleep 1 || break
     done > >(uniq_linebuffered) &
-    childpid=$!
+    childpid1=$!
+
+    while true; do
+        energy_now=0
+        energy_full=0
+
+        for bat in /sys/class/power_supply/BAT*; do
+            now=$(cat $bat/energy_now)
+            full=$(cat $bat/energy_full)
+            energy_now=$((energy_now + $now))
+            energy_full=$((energy_full + $full))
+        done
+
+        echo -e "battery\t^fg(#efefef)$(($energy_now * 100 / $energy_full))%"
+        sleep 1 || break
+    done > >(uniq_linebuffered) &
+    childpid2=$!
+
     herbstclient --idle
-    kill $childpid
+
+    kill $childpid1
+    kill $childpid2
 } | {
+    date=""
+    battery=""
     TAGS=($(herbstclient tag_status $monitor))
     separator="^fg(#1793D0)^ro(1x16)^fg()"
     while true; do
@@ -46,16 +67,22 @@ function uniq_linebuffered()
             echo -n "^ca()"
         done
         echo -n " $separator "
-        echo -n "$conky"
+        echo -n " date: $date $separator battery: $battery"
         echo
-        read line || break
-        cmd=($line)
+
+        IFS=$'\t' read -ra cmd || break
         case "$cmd[0]" in
             tag*)
                 TAGS=($(herbstclient tag_status $monitor))
                 ;;
-            conky*)
-                conky="${cmd[@]:1}"
+            date*)
+                date="${cmd[@]:1}"
+                ;;
+            battery*)
+                battery="${cmd[@]:1}"
+                ;;
+            reload)
+                exit
                 ;;
         esac
     done
