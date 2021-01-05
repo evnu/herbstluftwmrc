@@ -3,9 +3,13 @@
 # This should be somewhat similar to the font configured for dzen2 in Xresources
 FONT="-*-terminus-*-*-*-*-14-*-*-*-*-*-*-*"
 
-monitor=$1
-width=$2
-height=$3
+monitor=${1:-0}
+geometry=( $(herbstclient monitor_rect "$monitor") )
+if [ -z "$geometry" ] ;then
+    echo "Invalid monitor $monitor"
+    exit 1
+fi
+panel_width=${geometry[2]}
 
 pkill dzen2
 pkill conky
@@ -55,4 +59,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -dock -w $((width / 2)) -x $((width / 4)) &
+} 2>/dev/null | dzen2 -dock -w $((panel_width / 2)) -x $((panel_width / 4)) &
