@@ -9,6 +9,7 @@ if [ -z "$geometry" ]; then
     echo "Invalid monitor $monitor"
     exit 1
 fi
+x=${geometry[0]}
 panel_width=${geometry[2]}
 
 function uniq_linebuffered()
@@ -86,4 +87,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -dock -w $((panel_width / 2)) -x $((panel_width / 4)) &
+} 2>/dev/null | dzen2 -dock -w $((panel_width / 2)) -x $(( x + panel_width / 4)) &
