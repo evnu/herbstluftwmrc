@@ -30,29 +30,22 @@ battery()
             energy_full=$((energy_full + $full))
         done
 
-        echo -e "battery\t^fg(#efefef)$(($energy_now * 100 / $energy_full))%"
+        echo -e "^fg(#efefef)$(($energy_now * 100 / $energy_full))%"
     fi
 }
 
 {
     while true; do
-        # "date" output is checked once a second, but an event is only
-        # generated if the output changed compared to the previous run.
-        date +$'date\t^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d'
+        date=$(date +$'^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d')
+        battery=$(battery)
+        echo -e "status\t$date\t$battery"
         sleep 1 || break
     done > >(uniq_linebuffered) &
-    childpid1=$!
-
-    while true; do
-        battery
-        sleep 1 || break
-    done > >(uniq_linebuffered) &
-    childpid2=$!
+    childpid=$!
 
     herbstclient --idle
 
-    kill $childpid1
-    kill $childpid2
+    kill $childpid
 } | {
     date=""
     battery=""
@@ -75,7 +68,10 @@ battery()
             echo -n "^ca()"
         done
         echo -n " $separator "
-        echo -n " date: $date $separator battery: $battery"
+        echo -n " $date $separator "
+        if [ ! -z "$battery" ]; then
+            echo -n " battery: $battery $separator"
+        fi
         echo
 
         IFS=$'\t' read -ra cmd || break
@@ -83,11 +79,9 @@ battery()
             tag*)
                 TAGS=($(herbstclient tag_status $monitor))
                 ;;
-            date*)
-                date="${cmd[@]:1}"
-                ;;
-            battery*)
-                battery="${cmd[@]:1}"
+            status*)
+                date="${cmd[1]}"
+                battery="${cmd[2]}"
                 ;;
             reload*)
                 break
