@@ -17,16 +17,9 @@ function uniq_linebuffered()
     awk '$0 != l { print ; l=$0 ; fflush(); }' "$@"
 }
 
+battery()
 {
-    while true; do
-        # "date" output is checked once a second, but an event is only
-        # generated if the output changed compared to the previous run.
-        date +$'date\t^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d'
-        sleep 1 || break
-    done > >(uniq_linebuffered) &
-    childpid1=$!
-
-    while true; do
+    if [ -e /sys/class/power_supply/BAT0 ]; then
         energy_now=0
         energy_full=0
 
@@ -38,6 +31,20 @@ function uniq_linebuffered()
         done
 
         echo -e "battery\t^fg(#efefef)$(($energy_now * 100 / $energy_full))%"
+    fi
+}
+
+{
+    while true; do
+        # "date" output is checked once a second, but an event is only
+        # generated if the output changed compared to the previous run.
+        date +$'date\t^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d'
+        sleep 1 || break
+    done > >(uniq_linebuffered) &
+    childpid1=$!
+
+    while true; do
+        battery
         sleep 1 || break
     done > >(uniq_linebuffered) &
     childpid2=$!
@@ -87,4 +94,4 @@ function uniq_linebuffered()
                 ;;
         esac
     done
-} 2>/dev/null | dzen2 -dock -w $((panel_width / 2)) -x $(( x + panel_width / 4)) &
+} 2>/dev/null | dzen2 -dock -w $((panel_width / 2)) -x $((x + panel_width / 4)) &
