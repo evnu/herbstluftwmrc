@@ -58,8 +58,14 @@ battery()
                 '#')
                     echo -n "^fg(#1793D0)[^fg(#FFFFFF)${i:1}^fg(#1793D0)]"
                     ;;
+                '+')
+                    echo -n "^fg(#FFFFFF)${i:1}"
+                    ;;
                 '%')
                     echo -n "^fg(#1793D0)[^fg(#FF0000)${i:1}^fg(#1793D0)]"
+                    ;;
+                '-')
+                    echo -n "^fg(#FF0000)${i:1}"
                     ;;
                 ':')
                     echo -n "^fg(#FFFFFF) ${i:1} "
