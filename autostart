@@ -29,7 +29,7 @@ fi
 
 hc keybind $Mod-Return spawn "${TERMINAL:-$DEFAULT_SHELL}"
 hc keybind $Mod-p spawn dmenu_run
-hc keybind $Mod-F11 spawn slock
+hc keybind $Mod-F12 spawn slock
 
 # basic movement in tiling and floating mode
 # focusing clients
