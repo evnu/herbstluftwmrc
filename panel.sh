@@ -34,11 +34,19 @@ battery()
     fi
 }
 
+mem() {
+    mem_total=$(grep "MemTotal" /proc/meminfo | awk '{print $2;}')
+    mem_available=$(grep "MemAvailable" /proc/meminfo | awk '{print $2;}')
+
+    echo -e "^fg(#efefef)$(( 100 - (100 * $mem_available) / $mem_total ))%"
+}
+
 {
     while true; do
         date=$(date +$'^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d')
         battery=$(battery)
-        echo -e "status\t$date\t$battery"
+	mem=$(mem)
+        echo -e "status\t$date\t$battery\t$mem"
         sleep 1 || break
     done > >(uniq_linebuffered) &
     childpid=$!
@@ -49,6 +57,7 @@ battery()
 } | {
     date=""
     battery=""
+    mem=""
     TAGS=($(herbstclient tag_status $monitor))
     separator="^fg(#1793D0)^ro(1x16)^fg()"
     while true; do
@@ -81,6 +90,7 @@ battery()
         if [ ! -z "$battery" ]; then
             echo -n " battery: $battery $separator"
         fi
+        echo -n " mem: $mem $separator "
         echo
 
         IFS=$'\t' read -ra cmd || break
@@ -91,6 +101,7 @@ battery()
             status*)
                 date="${cmd[1]}"
                 battery="${cmd[2]}"
+                mem="${cmd[3]}"
                 ;;
             reload*)
                 break
