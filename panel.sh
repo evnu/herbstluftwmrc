@@ -31,6 +31,8 @@ battery()
         done
 
         echo -e "^fg(#efefef)$(($energy_now * 100 / $energy_full))%"
+    else
+	echo "-"
     fi
 }
 
