@@ -24,8 +24,8 @@ battery()
         energy_full=0
 
         for bat in /sys/class/power_supply/BAT*; do
-            now=$(cat $bat/energy_now || cat $bat/charge_now)
-            full=$(cat $bat/energy_full || cat $bat/charge_full)
+            now=$(cat $bat/energy_now 2> /dev/null || cat $bat/charge_now)
+            full=$(cat $bat/energy_full 2> /dev/null || cat $bat/charge_full)
             energy_now=$((energy_now + $now))
             energy_full=$((energy_full + $full))
         done
