@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This should be somewhat similar to the font configured for dzen2 in Xresources
-FONT="-*-terminus-*-*-*-*-14-*-*-*-*-*-*-*"
-
 monitor=${1:-0}
 geometry=($(herbstclient monitor_rect "$monitor"))
 if [ -z "$geometry" ]; then
