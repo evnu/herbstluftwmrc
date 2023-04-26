@@ -33,6 +33,19 @@ battery()
     fi
 }
 
+power_supply() {
+    if [ -e /sys/class/power_supply/AC ]; then
+        online=$(cat /sys/class/power_supply/AC/online)
+        if [[ $online == 1 ]]; then
+            echo -e "^fg(#00cc00)ok"
+        else
+            echo -e "^fg(#ff0000)X"
+        fi
+    else
+        echo ""
+    fi
+}
+
 mem() {
     mem_total=$(grep "MemTotal" /proc/meminfo | awk '{print $2;}')
     mem_available=$(grep "MemAvailable" /proc/meminfo | awk '{print $2;}')
@@ -44,8 +57,9 @@ mem() {
     while true; do
         date=$(date +$'^fg(#efefef)%H:%M^fg(#909090), %Y-%m-^fg(#efefef)%d')
         battery=$(battery)
+        power_supply=$(power_supply)
 	mem=$(mem)
-        echo -e "status\t$date\t$battery\t$mem"
+        echo -e "status\t$date\t$battery\t$power_supply\t$mem"
         sleep 1 || break
     done > >(uniq_linebuffered) &
     childpid=$!
@@ -56,6 +70,7 @@ mem() {
 } | {
     date=""
     battery=""
+    power_supply=""
     mem=""
     TAGS=($(herbstclient tag_status $monitor))
     separator="^fg(#1793D0)^ro(1x16)^fg()"
@@ -89,6 +104,9 @@ mem() {
         if [ ! -z "$battery" ]; then
             echo -n " battery: $battery $separator"
         fi
+        if [ ! -z "$power_supply" ]; then
+            echo -n " power_supply: $power_supply $separator"
+        fi
         echo -n " mem: $mem $separator "
         echo
 
@@ -100,7 +118,8 @@ mem() {
             status*)
                 date="${cmd[1]}"
                 battery="${cmd[2]}"
-                mem="${cmd[3]}"
+                power_supply="${cmd[3]}"
+                mem="${cmd[4]}"
                 ;;
             reload*)
                 break
